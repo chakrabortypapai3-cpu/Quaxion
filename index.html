@@ -433,14 +433,6 @@
             draw();
             requestAnimationFrame(gameLoop);
         }
-       
-        function jump() {
-            if (gameState === 'playing' && !duck.isJumping) {
-                duck.isJumping = true;
-                duck.vy = JUMP_FORCE;
-                playSound('jump');
-            }
-        }
 
         function jump() {
             if (gameState === 'playing' && !duck.isJumping) {
@@ -513,11 +505,52 @@
                 if (e.key === 'ArrowDown') crouch(false);
             });
            
-            document.getElementById('btn-jump').addEventListener('touchstart', e => { e.preventDefault(); jump(); });
-            document.getElementById('btn-crouch').addEventListener('touchstart', e => { e.preventDefault(); crouch(true); });
-            document.getElementById('btn-crouch').addEventListener('touchend', e => { e.preventDefault(); crouch(false); });
-            document.getElementById('btn-shoot').addEventListener('touchstart', e => { e.preventDefault(); shoot(); });
-           
+            // ✅ Updated Touch Controls
+const btnJump = document.getElementById('btn-jump');
+const btnCrouch = document.getElementById('btn-crouch');
+const btnShoot = document.getElementById('btn-shoot');
+
+btnJump.addEventListener('touchstart', e => {
+    e.preventDefault();
+    jump();
+    jumpHeld = true;           // ← Important for variable height
+});
+
+btnJump.addEventListener('touchend', e => {
+    e.preventDefault();
+    jumpHeld = false;          // ← Release = normal gravity
+});
+
+btnCrouch.addEventListener('touchstart', e => {
+    e.preventDefault();
+    crouch(true);
+});
+
+btnCrouch.addEventListener('touchend', e => {
+    e.preventDefault();
+    crouch(false);
+});
+
+btnShoot.addEventListener('touchstart', e => {
+    e.preventDefault();
+    shoot();
+});
+           // Mouse support (desktop testing)
+btnJump.addEventListener('mousedown', e => {
+    e.preventDefault();
+    jump();
+    jumpHeld = true;
+});
+
+btnJump.addEventListener('mouseup', e => {
+    e.preventDefault();
+    jumpHeld = false;
+});
+
+btnJump.addEventListener('mouseleave', e => {
+    jumpHeld = false;
+});
+
             document.getElementById('btn-jump').addEventListener('mousedown', jump);
             document.getElementById('btn-crouch').addEventListener('mousedown', () => crouch(true));
             document.getElementById('btn-crouch').addEventListener('mouseup', () => crouch(false));
